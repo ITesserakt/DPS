@@ -33,6 +33,7 @@ void graceful_shutdown(int _sig) {
     pthread_join(threads[2], NULL);
 
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &save);
+    printf("\n");
 
     exit(0);
 }
