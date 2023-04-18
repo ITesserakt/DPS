@@ -24,7 +24,7 @@
     {                                                                                                                  \
         int code = expr;                                                                                               \
         if ((code) < 0) {                                                                                              \
-            DEBUG_PRINT(stderr, "DEBUG: %s was lead to error %d at %s:%d", #expr, code, __FILE__, __LINE__);           \
+            DEBUG_PRINT(stderr, "DEBUG: %s was lead to error %d at %s:%d\n", #expr, code, __FILE__, __LINE__);           \
             return on_error;                                                                                           \
         }                                                                                                              \
     }                                                                                                                  \
