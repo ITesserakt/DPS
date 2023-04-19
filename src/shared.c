@@ -81,7 +81,7 @@ int receive_command(Game *game, sock_handle socket) {
         else if (in_res == Full)
             printf("Full\n");
         else if (in_res == Loose) {
-            printf("You win");
+            printf("You win\n");
             shutdown(socket, SHUT_RDWR);
             return -2;
         }
