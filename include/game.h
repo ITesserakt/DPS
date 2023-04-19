@@ -13,7 +13,7 @@ typedef enum {
 } CellState;
 
 typedef enum {
-    Miss = 0, Partial = 1, Full = 2
+    Miss = 0, Partial = 1, Full = 2, Loose = 3
 } Result;
 
 typedef struct {
@@ -33,5 +33,3 @@ void display_map(Game *game);
 CellState check_at(Game *game, Point at);
 
 Result try_kill(Game *game, Point at);
-
-bool ships_remained(Game *game);

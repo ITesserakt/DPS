@@ -74,11 +74,22 @@ static CellState checked_at(Game *game, int x, int y) {
     return Empty;
 }
 
+static bool ships_remained(Game *game) { 
+    for (int i = 0; i < Size; i++)
+        for (int j = 0; j < Size; j++)
+            if (game->map[i][j] == Alive)
+                return true;
+    return false;
+ }
+
 Result try_kill(Game *game, Point at) { 
     if (game->map[at.x][at.y] == Empty || game->map[at.x][at.y] == Dead)
         return Miss;
 
     game->map[at.x][at.y] = Dead;
+
+    if (!ships_remained(game))
+        return Loose;
 
     if (game->map[at.x][at.y] == Dead &&
         checked_at(game, at.x - 1, at.y - 1) != Alive &&
@@ -93,11 +104,3 @@ Result try_kill(Game *game, Point at) {
 
     return Partial;
 }
-
-bool ships_remained(Game *game) { 
-    for (int i = 0; i < Size; i++)
-        for (int j = 0; j < Size; j++)
-            if (game->map[i][j] == Alive)
-                return true;
-    return false;
- }
