@@ -80,6 +80,12 @@ int receive_command(Game *game, sock_handle socket) {
             printf("Partial\n");
         else if (in_res == Full)
             printf("Full\n");
+
+        if (!ships_remained(game)) {
+            printf("You win");
+            shutdown(socket, SHUT_RDWR);
+            return -2;
+        }
     } else {
         printf("Unknown payload received: %s\n", buf);
         return -1;

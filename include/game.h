@@ -33,3 +33,5 @@ void display_map(Game *game);
 CellState check_at(Game *game, Point at);
 
 Result try_kill(Game *game, Point at);
+
+bool ships_remained(Game *game);

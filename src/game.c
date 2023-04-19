@@ -56,7 +56,7 @@ void display_map(Game *game) {
             if (game->map[i][j] == Alive)
                 printf(" ▦ ");
             else if (game->map[i][j] == Dead)
-                printf(" X ");
+                printf(" ▢ ");
             else 
                 printf("   ");
         }
@@ -93,3 +93,11 @@ Result try_kill(Game *game, Point at) {
 
     return Partial;
 }
+
+bool ships_remained(Game *game) { 
+    for (int i = 0; i < Size; i++)
+        for (int j = 0; j < Size; j++)
+            if (game->map[i][j] == Alive)
+                return true;
+    return false;
+ }
