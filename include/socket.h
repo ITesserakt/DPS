@@ -2,7 +2,7 @@
 
 typedef unsigned short port_t;
 typedef int sock_handle;
-typedef void (*socket_handler)(sock_handle);
+typedef int (*socket_handler)(sock_handle);
 
 typedef struct {
     const char *addr;

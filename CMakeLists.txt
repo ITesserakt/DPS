@@ -5,8 +5,8 @@ project(Lab3 C)
 set(C_STANDARD C99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
-add_executable(server src/server.c src/socket.c src/shared.c) 
-add_executable(client src/client.c src/socket.c src/shared.c)
+add_executable(server src/server.c src/socket.c src/shared.c src/game.c src/command.c) 
+add_executable(client src/client.c src/socket.c src/shared.c src/game.c src/command.c)
 
 target_include_directories(client PRIVATE include)
 target_include_directories(server PRIVATE include)

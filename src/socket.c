@@ -35,6 +35,8 @@ int accept_connections(sock_handle sock, socket_handler handler) {
         fflush(stdout);
 
         handler(incoming_handle);
+
+        printf("Client disconnected\n");
     }
 }
 
