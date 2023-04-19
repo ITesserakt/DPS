@@ -31,7 +31,7 @@ static bool try_place_ship(Map map, Point at, int size, Direction dir) {
 
 Game *generate_map() {
     Game *g = malloc(sizeof(Game));
-    int ship_sizes[] = {4, 3, 2, 2, 2, 1, 1, 1};
+    int ship_sizes[] = {1, 1, 1};
 
     for (int i = 0; i < sizeof(ship_sizes) / sizeof(*ship_sizes);) {
         Point p = {.x = rand() % Size, .y = rand() % Size};
