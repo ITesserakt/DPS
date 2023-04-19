@@ -1,5 +1,6 @@
 #include <sys/socket.h>
 #include <signal.h>
+#include <time.h>
 
 #include "socket.h"
 #include "shared.h"
