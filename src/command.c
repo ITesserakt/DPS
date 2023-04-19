@@ -32,7 +32,8 @@ Command ask_user() {
         return command;
     }
     int foo = sscanf(cmd, "msl %c %c", &x, &y);
-    if (foo >= 3) {
+    printf("%d", foo);
+    if (foo) {
         MissleAtAttr attr = {.x = x - 'a', .y = y - 'a'};
         Command command = {.type = MissleAt, .missle_at = attr};
         return command;
