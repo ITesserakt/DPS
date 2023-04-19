@@ -10,11 +10,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # SSH directory
       - ~/.ssh:/root/.ssh
+      - /dev/net/tun:/dev/net/tun
+      - /lib/modules:/lib/modules
       # For Windows without WSL, a copy will be made
       # from /tmp/.ssh to ~/.ssh to fix permissions
       # - ~/.ssh:/tmp/.ssh:ro
       # Shell history persistence
       - ~/.zsh_history:/root/.zsh_history:z
+    cap_add:
+      - net_admin
+      - sys_module
     environment:
       - TZ=
     entrypoint: ["zsh", "-c", "while sleep 1000; do :; done"]
