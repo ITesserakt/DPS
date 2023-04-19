@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
 
     parse_command_args(argc, argv, &ip, &port);
     sock_handle sock = socket(AF_INET, SOCK_STREAM, 0);
+    TRY(sock);
 
     IPv4 ip_addr = {.addr = ip, .port = port};
     printf("Connecting to %s:%d\n", ip, port);
