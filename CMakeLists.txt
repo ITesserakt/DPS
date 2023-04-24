@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 2.9)
+
+project(Lab4 C)
+
+set(C_STANDARD C99)
+
+add_executable(main src/main.c)
+
+target_include_directories(main PRIVATE include)
+
+find_package(MPI REQUIRED)
+target_include_directories(main PRIVATE ${MPI_INCLUDE_PATH})
+target_link_libraries(main PRIVATE ${MPI_C_LIBRARIES})
