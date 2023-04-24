@@ -31,9 +31,7 @@ Command ask_user() {
         Command command = {.type = Display};
         return command;
     }
-    int foo = sscanf(cmd, "msl %c %c", &x, &y);
-    printf("%d", foo);
-    if (foo) {
+    if (sscanf(cmd, "msl %c %c", &x, &y) == 2) {
         MissleAtAttr attr = {.x = x - 'a', .y = y - 'a'};
         Command command = {.type = MissleAt, .missle_at = attr};
         return command;

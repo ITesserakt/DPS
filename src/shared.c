@@ -104,6 +104,7 @@ int process_command(Command cmd, Game *game, sock_handle socket) {
         TRY(sendall(socket, buf, sizeof(buf), 0));
         TRY(receive_command(game, socket));
     } else if (cmd.type == Quit) {
+        shutdown(socket, SHUT_RDWR);
         raise(SIGINT);
     } else if (cmd.type == MissleRes) {
         int size = sprintf(buf, "rst %d", cmd.missle_res);
