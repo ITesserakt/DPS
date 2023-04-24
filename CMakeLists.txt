@@ -4,6 +4,8 @@ project(Lab4 C)
 
 set(C_STANDARD C99)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+
 add_executable(main src/main.c)
 
 target_include_directories(main PRIVATE include)
