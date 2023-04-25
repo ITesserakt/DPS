@@ -1,0 +1,21 @@
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{vmargin}     % настройка отступов
+\setpapersize{A4}
+% лево, верх, право, низ, верхний кол, нижний кол, номер страницы
+\setmarginsrb{3cm}{2cm}{1.5cm}{2cm}{0pt}{0mm}{0pt}{13mm}
+
+\usepackage{indentfirst} % отступ красной строки после \section
+\usepackage{float}       % [H]
+\usepackage{graphicx}    % \includegraphics[]{}
+
+\usepackage{hyperref}    % \href
+
+\usepackage{appendix}
+
+\sloppy % стараемся не залезать за поля
+% замена рис. на Рисунок
+\addto\captionsrussian{\renewcommand{\figurename}{Рисунок}}
+\usepackage[labelsep=endash]{caption} % разделитель между рис. теперь тире
