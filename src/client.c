@@ -1,16 +1,18 @@
-#include <sys/socket.h>
 #include <signal.h>
+#include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
 
-#include "socket.h"
-#include "shared.h"
-#include "utils.h"
 #include "game.h"
+#include "shared.h"
+#include "socket.h"
+#include "utils.h"
 
 Game *client_game;
 sock_handle client_socket;
 
+/// Called when SIGINT received. Closes opened socket connection and frees
+/// memory
 void graceful_shutdown(int _sig) {
     free(client_game);
     close(client_socket);
@@ -32,9 +34,9 @@ int main(int argc, char **argv) {
 
     client_game = generate_map();
     signal(SIGINT, graceful_shutdown);
-    
+
     TRY(receive_command(client_game, client_socket));
-    
+
     greetings();
 
     TRY(game_loop(client_game, client_socket));

@@ -6,6 +6,7 @@
 
 void greetings() { printf("Available commands: dsp | msl <x> <y> | exit\n"); }
 
+/// Reads a line from stdin to [s] terminated with '\0'
 static void read_line(char *s) {
     char c;
     int index = 0;

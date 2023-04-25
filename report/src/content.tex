@@ -20,7 +20,60 @@
 Подключение к серверу производится с помощью сокетов, при чем сервер блокируется
 после соединения хотя бы с одним клиентом. После окончания игры сервер ожидает
 подключения следующих клиентов.
- 
+
+Игровая часть состоит из поля размером 10х10 с клетками, которые могут
+находиться в 3 состояниях:
+
+\begin{itemize}
+    \item пусто
+    \item содержит целую часть корабля
+    \item содержит уничтоженную часть корабля
+\end{itemize}
+
+При старте клиента или при появлении нового соединения на сервере, генерируется
+новое игровое поле. Всего на нем размещается 6 кораблей размерами от 4 до 1 клеток.
+
+Когда проверяется клетка на наличие корабля, проверяется также и 8 клеток вокруг
+нее, так как полноценный корабль со всех сторон окружен пустыми клетками. Если
+все соседи - не целый корабль, то возвращается сообщение о том, что корабль
+полностью уничтожен. Если не осталось ни одного корабля, то вернется сообщение,
+что другой пользователь проиграл.
+
+При передаче пользователю права хода, ему предлагается ввести одну из 3 команд:
+\texttt{dsp, msl, exit} - отобразить его игровое поле, <<выстрелить>> по полю
+противника и выйти из сессии. Команды делятся на 2 вида: блокирующие и
+неблокирующие, например команда \texttt{dsp} неблокирующая и не передает ход
+оппоненту.
+
+Поведение клиента отличается тем, что он после подключения сразу же ожидает
+команды от сервера, эмулируя тем самым то, что пользователь с сервера ходит первым.
+
+\newpage
+
+\section*{Описание используемого протокола}
+\addcontentsline{toc}{section}{Описание используемого протокола}
+
+В программе используется собственный протокол для передачи информации об игре.
+Он использует tcp-протокол сетевого уровня. Используется следующий набор
+команд:
+
+\begin{itemize}
+    \item \texttt{msl <x> <y>} - <<выстрелить>> в поле противника по координатам
+          \emph{x, y}. В ответ присылается \texttt{rst <code>}, где \emph{code}
+          - число, показывающий попал, промазал, частично попал или проиграл ли игрок.
+\end{itemize}
+
+Для примера ниже приведена диаграмма взаимодействия клиента и сервера. Так,
+клиент подключается к уже работающему серверу и они обмениваются командами
+\texttt{msl}, после чего клиент отключается.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{images/lab3_sequence.drawio.png}
+    \caption{Временная диаграмма используемого протокола}
+    \label{fig:sequence}
+\end{figure}
+
 \newpage
 
 \section*{Блок-схема программы}
@@ -28,16 +81,30 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{images/lab2_block_scheme.drawio.png}
-    \caption{Основная блок-схема программы}
+    \includegraphics[width=0.5\linewidth]{images/lab3_flowchart.drawio.png}
+    \caption{Основная блок-схема клиента и сервера}
     \label{fig:flowchart}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{images/lab2_handlers_scheme.drawio.png}
-    \caption{Блок-схема обработчиков сигналов и потоков}
-    \label{fig:handlers_flowchart}
+    \includegraphics[width=0.85\linewidth]{images/lab3_flowchart_cont.drawio.png}
+    \caption{Блок-схема части клиента}
+    \label{fig:client_flowchart}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{images/lab3_flowchart_server.drawio.png}
+    \caption{Блок-схема части сервера}
+    \label{fig:server_flowchart}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\linewidth]{images/lab3_flowchart_cont2.drawio.png}
+    \caption{Блок-схема обработчика сигнала SIGINT}
+    \label{fig:flowchart_sigint}
 \end{figure}
 
 \newpage
@@ -45,35 +112,28 @@
 \section*{Результат работы}
 \addcontentsline{toc}{section}{Результат работы}
 
-Так как программа меняет свой вывод в течении времени, то ниже приведены
-несколько рисунков, отображающих различный вывод программы.
-
-При вводе цифры, например, "5":
+Ниже приведены выводы программы в разные моменты времени, так как программа
+меняет его в течении времени.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/lab2_output1.png}
-    \caption{Вывод программы при перемещении одного из лифтов}
-    \label{fig:output1}
+    \includegraphics[width=0.9\linewidth]{images/lab3_connect.png}
+    \caption{Вывод клиента и сервера при подключении клиента, где слева - вывод клиента, а справа - вывод сервера}
+    \label{fig:connection}
 \end{figure}
 
-Когда лифт достиг нужного этажа:
-
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/lab2_output2.png}
-    \caption{Вывод программы, при ожидающих лифтах}
-    \label{fig:output2}
+    \includegraphics[width=0.5\linewidth]{images/lab3_dsp.png}
+    \caption{Вывод игрового поля сервера}
+    \label{fig:dsp}
 \end{figure}
 
-Лифт можно отправить на другой этаж, чтобы тот разгрузился, для этого можно
-нажать клавишу "u":
-
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/lab2_output3.png}
-    \caption{Вывод программы после разгрузки лифта}
-    \label{fig:output3}
+    \includegraphics[width=0.3\linewidth]{images/lab3_msl.png}
+    \caption{Вывод при <<выстреле>> по игровому полю противника с полным попаданием по кораблю}
+    \label{fig:msl}
 \end{figure}
 
 \newpage
@@ -84,86 +144,159 @@
 \section*{Текст программы}
 \addcontentsline{toc}{section}{Текст программы}
 
-\begin{verbatim}
-include/compare.h:
+\textbf{include/command.h}
 
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
 #pragma once
 
-/// Used in comparing functions
-typedef enum {
-    Less = -1,
-    Equal = 0,
-    Greater = 1
-} Ordering;
+#include <game.h>
 
-include/handler.h:
+/// Command types that user used to interact with program
+typedef enum { Display, MissleAt, Quit, MissleRes } CommandType;
 
-#pragma once
-
-#include "lift.h"
-
-/// Receives a passenger lift as a parameter [p] and updates it in infinite loop
-/// Returns [NULL]
-void *update_pass_lift(void *p);
-
-/// Receives a cargo lift as a parameter [p] and updates it in infinite loop
-/// Returns [NULL]
-void *update_cargo_lift(void *p);
-
-/// Receives an array of lifts of size 2 and displays it in infinite loop
-/// Returns [NULL]
-void *display_lifts(void *p);
-
-/// Saves pointer to [mutex] for internal purposes
-void init_handlers_system(pthread_mutex_t *mutex);
-
-include/lift.h:
-
-#pragma once
-
-#include <pthread.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
-#include "compare.h"
-
-#define MAX_FLOOR 10
-
-typedef unsigned int Floor;
-
-/// Idle - lift waits for commands - default state
-/// Disabled - lift does not handle any commands
-/// Upward - lift goes up
-/// Downward - lift goes down
-typedef enum { Downward, Upward, Idle, Disabled } LiftState;
-
+/// Contains coordinates to missle to
 typedef struct {
-    Floor current_floor;
-    Floor target_floor;
-    /// Change of load when lift becomes idle again
-    int load_change;
-    unsigned int load;
-    LiftState state;
-} Lift;
+    int x, y;
+} MissleAtAttr;
 
-/// Fills fields of [l] with default values
-void init_lift(Lift *l);
+/// Contain parsed command and its attributes
+typedef struct {
+    union {
+        MissleAtAttr missle_at;
+        Result missle_res;
+    };
 
-/// Compares distances between two lifts against the [floor] and returns [Ordering]
-Ordering compare(Lift a, Lift b, Floor floor);
+    CommandType type;
+} Command;
 
-/// Changes direction of the lift [l] when it's idle with respect to [floor]
-void call_lift(Lift *l, Floor floor);
+/// Prints greet message and all allowed command to enter
+void greetings();
 
-/// Checks if lift [l] is enabled and is not in idle state
-bool is_busy(Lift l);
+/// Waits for user input and parses it to command object
+Command ask_user();
 
-/// Returns nearest lift to [floor] from [lifts] using [compare] function, filtering all busy lifts
-/// If all lifts are busy returns [NULL]
-Lift *get_nearest_free(Lift *lifts, size_t size, Floor floor);
+/// Determines whether command will block execution of app until response is
+/// received
+bool is_blocking(Command cmd);
+\end{lstlisting}
 
-include/utils.h:
+\textbf{include/game.h}
 
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#pragma once
+
+#include <stdbool.h>
+
+#define Size 10
+
+/// Direction where ship is growing when map generated
+typedef enum { Up, Down, Right, Left, DSize } Direction;
+
+/// State of each cell on the game map
+typedef enum { Empty = 0, Alive = 1, Dead = 2 } CellState;
+
+/// Result of sending missle to the particular cell of the game map
+typedef enum { Miss = 0, Partial = 1, Full = 2, Loose = 3 } Result;
+
+/// Contains coordinates to 2D point of the map
+typedef struct {
+    int x, y;
+} Point;
+
+typedef CellState Map[Size][Size];
+
+/// Contains game map
+typedef struct {
+    Map map;
+} Game;
+
+/// Fulfills game map with 6 ships
+Game *generate_map();
+
+/// Outputs current state of the game map to stdout
+void display_map(Game *game);
+
+/// Returns current cell state at specific point on the game map
+CellState check_at(Game *game, Point at);
+
+/// Checks if cell is alive at specific coords, makes it dead and returns a
+/// result depending on its neighbours
+Result try_kill(Game *game, Point at);
+\end{lstlisting}
+
+\textbf{include/shared.h}
+
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#pragma once
+
+#include "command.h"
+#include "game.h"
+#include "socket.h"
+
+/// Prints how to use this app to stdout
+void help_prompt(const char *exec);
+
+/// Parses ip address and port to connect to from command line args
+void parse_command_args(int argc, char **argv, char **ip, unsigned short *port);
+
+/// Applies specific command to the current game state
+int process_command(Command cmd, Game *game, sock_handle socket);
+
+/// Blocks until next response received and processes it
+int receive_command(Game *game, sock_handle socket);
+
+/// Greets the user, reads next command and processes it in infinite loop
+int game_loop(Game *game, sock_handle socket);
+\end{lstlisting}
+
+\textbf{include/socket.h}
+
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#pragma once
+
+typedef unsigned short port_t;
+typedef int sock_handle;
+typedef int (*socket_handler)(sock_handle);
+
+/// Packed version of ip and port
+typedef struct {
+    const char *addr;
+    port_t port;
+} IPv4;
+
+/// Tries to open a socket connection and bind it to specific ip and port
+sock_handle open_socket_at(IPv4 ip);
+
+/// Starts to accept socket connections. On each connection, handler is called
+int accept_connections(sock_handle sock, socket_handler handler);
+
+/// Tries to connect to a socket at specific ip and port
+int open_connection(sock_handle sock, IPv4 to);
+\end{lstlisting}
+
+\textbf{include/utils.h}
+
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
 #pragma once
 
 #include <stdio.h>
@@ -190,7 +323,7 @@ include/utils.h:
     {                                                                                                                  \
         int code = expr;                                                                                               \
         if ((code) < 0) {                                                                                              \
-            DEBUG_PRINT(stderr, "DEBUG: %s was lead to error %d at %s:%d", #expr, code, __FILE__, __LINE__);           \
+            DEBUG_PRINT(stderr, "DEBUG: %s was lead to error %d at %s:%d\n", #expr, code, __FILE__, __LINE__);           \
             return on_error;                                                                                           \
         }                                                                                                              \
     }                                                                                                                  \
@@ -202,7 +335,7 @@ include/utils.h:
     {                                                                                                                  \
         int code = expr;                                                                                               \
         if ((code) < 0) {                                                                                              \
-            DEBUG_PRINT(stderr, "DEBUG: %s was lead to error %d at %s:%d", #expr, code, __FILE__, __LINE__);           \
+            DEBUG_PRINT(stderr, "DEBUG: %s was lead to error %d at %s:%d\n", #expr, code, __FILE__, __LINE__);           \
             return code;                                                                                               \
         }                                                                                                              \
     }                                                                                                                  \
@@ -220,332 +353,356 @@ include/utils.h:
 
 /// Shortcut for sizeof(<array type>) / sizeof(<type of item of array type>)
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(*(array)))
+\end{lstlisting}
 
-src/handler.c:
+\textbf{src/client.c}
 
-#include "handler.h"
-
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-static const __useconds_t BASE_DELAY = 500 * 1000;
-
-static pthread_mutex_t *mutex;
-
-void init_handlers_system(pthread_mutex_t *mutex_) {
-    mutex = mutex_;
-}
-
-/// Moves lift upwards or downwards or applies load change in idle state
-static void do_update(Lift *lift) {
-    pthread_mutex_lock(mutex);
-
-    if (lift->current_floor == lift->target_floor) {
-        lift->state = Idle;
-        lift->load += lift->load_change;
-        lift->load_change = 0;
-    }
-    call_lift(lift, lift->target_floor);
-
-    if (lift->state == Downward)
-        lift->current_floor--;
-    if (lift->state == Upward)
-        lift->current_floor++;
-
-    pthread_mutex_unlock(mutex);
-}
-
-/// Displays current lift position to [stdout] with [prefix]
-static void show(const Lift *l, const char *prefix) {
-    pthread_mutex_lock(mutex);
-
-    printf("%s:", prefix);
-
-    for (Floor i = 1; i <= MAX_FLOOR; i++) {
-        if (l->current_floor == i)
-            printf(" %u ", l->load);
-        else
-            printf(" - ");
-    }
-
-    pthread_mutex_unlock(mutex);
-}
-
-void *update_pass_lift(void *p) {
-    Lift *lift = p;
-    while (lift->state != Disabled) {
-        do_update(lift);
-
-        usleep(BASE_DELAY);
-    }
-
-    return NULL;
-}
-
-void *update_cargo_lift(void *p) {
-    Lift *lift = p;
-    while (lift->state != Disabled) {
-        do_update(lift);
-
-        usleep(2 * BASE_DELAY);
-    }
-
-    return NULL;
-}
-
-/// Returns string representation of lift's state
-static const char *display_state(LiftState state) {
-    if (state == Disabled)
-        return "dsbd";
-    else if (state == Idle)
-        return "idle";
-    else if (state == Downward)
-        return "down";
-
-    return "upwd";
-}
-
-void *display_lifts(void *p) {
-    Lift *lifts = p;
-
-    while (lifts[0].state != Disabled || lifts[1].state != Disabled) {
-        printf("\r");
-
-        show(&lifts[0], "LP");
-        printf(" |%s|\t", display_state(lifts[0].state));
-        show(&lifts[1], "LC");
-        printf(" |%s|", display_state(lifts[1].state));
-
-        fflush(stdout);
-
-        usleep(BASE_DELAY / 2);
-    }
-
-    return NULL;
-}
-
-src/lift.c:
-
-#include "lift.h"
-
-/// Gets a distance between current floor of lift and specified floor [b] with respect of lift's state
-static unsigned int dist(Lift a, Floor b) {
-    switch (a.state) {
-    case Idle:
-        if (a.current_floor > b)
-            return a.current_floor - b;
-        return b - a.current_floor;
-    case Downward:
-        if (a.current_floor < b)
-            return a.current_floor + b;
-        return a.current_floor - b;
-    case Upward:
-        if (a.current_floor > b)
-            return 2 * MAX_FLOOR - a.current_floor - b - 1;
-        return b - a.current_floor;
-    case Disabled:
-        return -1;
-    }
-}
-
-/// Compares two unsigned int values and returns [Ordering]
-static Ordering compare_uint(unsigned int a, unsigned int b) {
-    if (a < b)
-        return Less;
-    if (a == b)
-        return Equal;
-    return Greater;
-}
-
-Ordering compare(Lift a, Lift b, Floor floor) { return compare_uint(dist(a, floor), dist(b, floor)); }
-
-void call_lift(Lift *l, Floor floor) {
-    if (l->state == Idle) {
-        if (l->current_floor > floor)
-            l->state = Downward;
-        else if (l->current_floor < floor)
-            l->state = Upward;
-    }
-}
-
-bool is_busy(Lift l) { return l.state != Idle && l.state != Disabled; }
-
-void init_lift(Lift *l) {
-    l->current_floor = 1;
-    l->load = 0;
-    l->state = Idle;
-    l->target_floor = 1;
-    l->load_change = 0;
-}
-
-Lift *get_nearest_free(Lift *lifts, size_t size, Floor floor) {
-    if (size == 0)
-        return NULL;
-
-    Lift *current = lifts;
-    for (size_t i = 1; i < size; i++) {
-        if (is_busy(lifts[i]))
-            continue;
-
-        Ordering cmp = compare(*current, lifts[i], floor);
-
-        if (cmp == Greater || is_busy(*current))
-            current = &lifts[i];
-    }
-
-    return is_busy(*current) ? NULL : current;
-}
-
-src/main.c:
-
-#include <pthread.h>
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
 #include <signal.h>
-#include <termios.h>
+#include <sys/socket.h>
+#include <time.h>
 #include <unistd.h>
 
-#include "handler.h"
-#include "lift.h"
+#include "game.h"
+#include "shared.h"
+#include "socket.h"
 #include "utils.h"
 
-/// Used in function exit code
-typedef enum {
-    ThreadCreateFailed = -1,
-    TerminalProps = -2,
-    MutexCreateFailed = -3,
-    WrongStdin = -4,
+Game *client_game;
+sock_handle client_socket;
 
-    Ok = 0,
-} Error;
-
-typedef void *(*Handler)(void *);
-
-struct termios save;
-pthread_t threads[3];
-Lift lifts[2];
-
-/// Disables lifts and joins threads while they're exiting
-/// Also reenables canon input
+/// Called when SIGINT received. Closes opened socket connection and frees
+/// memory
 void graceful_shutdown(int _sig) {
-    lifts[0].state = lifts[1].state = Disabled;
-
-    pthread_join(threads[0], NULL);
-    pthread_join(threads[1], NULL);
-    pthread_join(threads[2], NULL);
-
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &save);
-    printf("\n");
-
+    free(client_game);
+    close(client_socket);
     exit(0);
 }
 
-/// Checks if current session is in terminal, saves it state and sets non-canon type of input
-/// ERRORS: [WrongStdin] if current session is not in terminal
-///         [TerminalProps] if failed to save or to set terminal properties
-Error disable_canon_input(struct termios *save) {
-    if (!isatty(STDIN_FILENO)) {
-        perror("stdin isn't a terminal");
-        return WrongStdin;
+int main(int argc, char **argv) {
+    srand(time(NULL));
+    char *ip;
+    unsigned short port;
+
+    parse_command_args(argc, argv, &ip, &port);
+    client_socket = socket(AF_INET, SOCK_STREAM, 0);
+    TRY(client_socket);
+
+    IPv4 ip_addr = {.addr = ip, .port = port};
+    printf("Connecting to %s:%d\n", ip, port);
+    TRY(open_connection(client_socket, ip_addr));
+
+    client_game = generate_map();
+    signal(SIGINT, graceful_shutdown);
+
+    TRY(receive_command(client_game, client_socket));
+
+    greetings();
+
+    TRY(game_loop(client_game, client_socket));
+}
+\end{lstlisting}
+
+\textbf{src/command.c}
+
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "command.h"
+
+void greetings() { printf("Available commands: dsp | msl <x> <y> | exit\n"); }
+
+static void read_line(char *s) {
+    char c;
+    int index = 0;
+    while (scanf("%c", &c) == 1) {
+        if (c == EOF || c == '\n')
+            break;
+
+        s[index++] = c;
     }
 
-    struct termios tty;
-
-    TRY(tcgetattr(STDIN_FILENO, save), TerminalProps);
-    tty = *save;
-    tty.c_lflag &= ~(ICANON | ECHO);
-    tty.c_cc[VMIN] = 1;
-    TRY(tcsetattr(STDIN_FILENO, TCSAFLUSH, &tty), TerminalProps);
-
-    return Ok;
+    s[index] = '\0';
 }
 
-/// Runs a new thread with default attributes calling [handler] with [arg]
-/// ERRORS: [ThreadCreateFailed] - if failed to create a thread with default attrs
-Error open_thread(pthread_t *thread, Handler handler, void *arg) {
-    pthread_attr_t attr;
-    TRY(pthread_attr_init(&attr), ThreadCreateFailed);
-    TRY(pthread_create(thread, &attr, handler, arg), ThreadCreateFailed);
+Command ask_user() {
+    printf("> ");
 
-    return Ok;
-}
+    char x, y;
+    char cmd[32];
 
-/// Initialises [mutex] with default attributes
-/// ERRORS: [MutexCreateFailed] - if failed to create a mutex with default attrs
-Error get_fresh_mutex(pthread_mutex_t *mutex) {
-    pthread_mutexattr_t attr;
-    TRY(pthread_mutexattr_init(&attr));
-    TRY(pthread_mutex_init(mutex, &attr));
+    read_line(cmd);
 
-    return Ok;
-}
-
-/// Searches for [ch] in array of chars [alphabet] with size [size]
-/// Returns index of the first char of [alphabet] when it's equals to [ch], otherwise returns -1
-size_t find_index(const char alphabet[], size_t size, char ch) {
-    for (size_t i = 0; i < size; i++)
-        if (alphabet[i] == ch)
-            return i;
-    return -1;
-}
-
-/// Reacts on user's input by moving lifts to certain floors
-/// In particular, if input in 0..9, moves the nearest lift to this floor
-/// if input in [lp_control], moves the first lift
-/// if input in [lc_control], moves the second lift
-void manage_lifts(unsigned char c, pthread_mutex_t *busy_mutex) {
-    static const char floor_control[] = "1234567890";
-    static const char lp_control[] = "qwertyuiop";
-    static const char lc_control[] = "asdfghjkl;";
-    size_t index;
-
-    if ((index = find_index(floor_control, sizeof(floor_control), c)) != -1) {
-        Lift *nearest = get_nearest_free(lifts, 2, index + 1);
-        if (!nearest)
-            return;
-
-        nearest->target_floor = index + 1;
-        nearest->load_change = 1;
-    } else if ((index = find_index(lp_control, sizeof(lp_control), c)) != -1 && lifts[0].load > 0) {
-        lifts[0].target_floor = index + 1;
-        lifts[0].load_change = -1;
-    } else if ((index = find_index(lc_control, sizeof(lc_control), c)) != -1 && lifts[1].load > 0) {
-        lifts[1].target_floor = index + 1;
-        lifts[1].load_change = -1;
+    if (strncmp(cmd, "dsp", 3) == 0) {
+        Command command = {.type = Display};
+        return command;
+    }
+    if (sscanf(cmd, "msl %c %c", &x, &y) == 2) {
+        MissleAtAttr attr = {.x = x - 'a', .y = y - 'a'};
+        Command command = {.type = MissleAt, .missle_at = attr};
+        return command;
+    }
+    if (strncmp(cmd, "exit", 4) == 0) {
+        Command command = {.type = Quit};
+        return command;
     }
 
-    return;
+    printf("Unknown command entered: %s\n", cmd);
+    return ask_user();
 }
 
-/// Program's entry point. Initializes lifts, mutex and displaying system, opens 3 threads for handling user input and
-/// reads user input in infinite loop
-int main() {
-    TRY(disable_canon_input(&save));
+bool is_blocking(Command cmd) {
+    if (cmd.type == MissleAt)
+        return true;
+    return false;
+}
+\end{lstlisting}
 
-    pthread_mutex_t busy_mutex;
-    TRY(get_fresh_mutex(&busy_mutex));
+\textbf{src/game.c}
 
-    init_lift(&lifts[0]);
-    init_lift(&lifts[1]);
-    init_handlers_system(&busy_mutex);
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#include <stdio.h>
+#include <stdlib.h>
 
-    TRY(open_thread(&threads[0], update_pass_lift, &lifts[0]));
-    TRY(open_thread(&threads[1], update_cargo_lift, &lifts[1]));
-    TRY(open_thread(&threads[2], display_lifts, lifts));
+#include "game.h"
+
+/// Tries to make cells with start at specific coord and direction filled. Also
+/// checks overlaps. Returns true if cell was populated
+static bool try_place_ship(Map map, Point at, int size, Direction dir) {
+    for (int i = 0; i < size; i++) {
+        if (dir == Up && (at.x + i > Size || map[at.x + i][at.y]))
+            return false;
+        if (dir == Down && (at.x - i < 0 || map[at.x - i][at.y]))
+            return false;
+        if (dir == Right && (at.y + i > Size || map[at.x][at.y + i]))
+            return false;
+        if (dir == Left && (at.y - i < 0 || map[at.x][at.y - i]))
+            return false;
+    }
+
+    for (int i = 0; i < size; i++) {
+        if (dir == Up)
+            map[at.x + i][at.y] = Alive;
+        if (dir == Down)
+            map[at.x - i][at.y] = Alive;
+        if (dir == Right)
+            map[at.x][at.y + i] = Alive;
+        if (dir == Left)
+            map[at.x][at.y - i] = Alive;
+    }
+
+    return true;
+}
+
+Game *generate_map() {
+    Game *g = malloc(sizeof(Game));
+    int ship_sizes[] = {4, 3, 2, 2, 1, 1};
+
+    for (int i = 0; i < sizeof(ship_sizes) / sizeof(*ship_sizes);) {
+        Point p = {.x = rand() % Size, .y = rand() % Size};
+        Direction dir = rand() % DSize;
+
+        if (try_place_ship(g->map, p, ship_sizes[i], dir))
+            i++;
+    }
+    return g;
+}
+
+void display_map(Game *game) {
+    printf("  | ");
+    for (int i = 0; i < Size; i++)
+        printf(" %c ", 'a' + i);
+    printf("\n");
+
+    for (int i = 0; i < Size; i++) {
+        printf("%c | ", 'a' + i);
+
+        for (int j = 0; j < Size; j++) {
+            if (game->map[i][j] == Alive)
+                printf(" O ");
+            else if (game->map[i][j] == Dead)
+                printf(" U ");
+            else
+                printf("   ");
+        }
+        printf("\n");
+    }
+}
+
+CellState check_at(Game *game, Point at) { return game->map[at.x][at.y]; }
+
+/// Returns state of cell if coord x & y available on the map, empty cell state
+/// otherwise.
+static CellState checked_at(Game *game, int x, int y) {
+    if (0 <= x && x < Size && 0 <= y && y <= Size)
+        return game->map[x][y];
+    return Empty;
+}
+
+/// Returns true if any cell on the map is populated, false otherwise
+static bool ships_remained(Game *game) {
+    for (int i = 0; i < Size; i++)
+        for (int j = 0; j < Size; j++)
+            if (game->map[i][j] == Alive)
+                return true;
+    return false;
+}
+
+Result try_kill(Game *game, Point at) {
+    if (game->map[at.x][at.y] == Empty || game->map[at.x][at.y] == Dead)
+        return Miss;
+
+    game->map[at.x][at.y] = Dead;
+
+    if (!ships_remained(game))
+        return Loose;
+
+    if (game->map[at.x][at.y] == Dead &&
+        checked_at(game, at.x - 1, at.y - 1) != Alive &&
+        checked_at(game, at.x - 1, at.y + 0) != Alive &&
+        checked_at(game, at.x - 1, at.y + 1) != Alive &&
+        checked_at(game, at.x + 0, at.y - 1) != Alive &&
+        checked_at(game, at.x + 0, at.y + 1) != Alive &&
+        checked_at(game, at.x + 1, at.y - 1) != Alive &&
+        checked_at(game, at.x + 1, at.y + 0) != Alive &&
+        checked_at(game, at.x + 1, at.y + 1) != Alive)
+        return Full;
+
+    return Partial;
+}
+\end{lstlisting}
+
+\textbf{src/server.c}
+
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#include <arpa/inet.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+
+#include "shared.h"
+#include "socket.h"
+#include "utils.h"
+
+sock_handle serv_sock;
+Game *server_game;
+
+/// Called when SIGINT received. Closes opened socket connection and frees
+/// memory
+void graceful_shutdown(int _sig) {
+    free(server_game);
+    close(serv_sock);
+    exit(0);
+}
+
+/// Creates game map on each connection and begins game loop
+int do_game(sock_handle client_socket) {
+    server_game = generate_map();
+
+    greetings();
+
+    TRY(game_loop(server_game, client_socket));
+
+    return 0;
+}
+
+int main(int argc, char **argv) {
+    srand(time(NULL));
+    char *ip;
+    unsigned short port;
+
+    parse_command_args(argc, argv, &ip, &port);
+
+    IPv4 ip_addr = {.addr = ip, .port = port};
+    serv_sock = open_socket_at(ip_addr);
+    TRY(serv_sock);
 
     signal(SIGINT, graceful_shutdown);
 
+    printf("Started socket connection at %s:%d\n", ip, port);
+
+    TRY(accept_connections(serv_sock, do_game));
+}
+\end{lstlisting}
+
+\textbf{src/socket.c}
+
+\begin{lstlisting}[
+    language=C++,
+    directivestyle={\color{black}}, 
+    emph={int,char,double,float,unsigned}, 
+    emphstyle={\color{blue}}]
+#include <arpa/inet.h>
+#include <stdbool.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
+#include "socket.h"
+#include "utils.h"
+
+sock_handle open_socket_at(IPv4 ip) {
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    TRY(sock);
+
+    struct sockaddr_in sock_addr = {.sin_family = AF_INET,
+                                    .sin_port = htons(ip.port),
+                                    .sin_addr = {.s_addr = inet_addr(ip.addr)}};
+
+    TRY(bind(sock, (struct sockaddr *)&sock_addr, sizeof(sock_addr)));
+
+    return sock;
+}
+
+int accept_connections(sock_handle sock, socket_handler handler) {
+    TRY(listen(sock, 1));
+
     while (true) {
-        unsigned char next;
-        read(STDIN_FILENO, &next, 1);
-        size_t index;
+        struct sockaddr_in incoming;
+        unsigned int incoming_size;
+        sock_handle incoming_handle =
+            accept(sock, (struct sockaddr *)&incoming, &incoming_size);
 
-        pthread_mutex_lock(&busy_mutex);
+        TRY(incoming_handle);
 
-        manage_lifts(next, &busy_mutex);
+        printf("Received new connection from %s:%d\n",
+                inet_ntoa(incoming.sin_addr), ntohs(incoming.sin_port));
+        fflush(stdout);
 
-        pthread_mutex_unlock(&busy_mutex);
+        handler(incoming_handle);
+
+        printf("Client disconnected\n");
     }
 }
 
-\end{verbatim}
+int open_connection(sock_handle sock, IPv4 to) {
+    struct sockaddr_in sock_addr = {.sin_family = AF_INET,
+                                    .sin_port = htons(to.port),
+                                    .sin_addr = {.s_addr = inet_addr(to.addr)}};
+
+    TRY(connect(sock, (struct sockaddr *)&sock_addr, sizeof(sock_addr)));
+
+    return 0;
+}
+\end{lstlisting}

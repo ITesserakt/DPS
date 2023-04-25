@@ -3,6 +3,8 @@
 
 #include "game.h"
 
+/// Tries to make cells with start at specific coord and direction filled. Also
+/// checks overlaps. Returns true if cell was populated
 static bool try_place_ship(Map map, Point at, int size, Direction dir) {
     for (int i = 0; i < size; i++) {
         if (dir == Up && (at.x + i > Size || map[at.x + i][at.y]))
@@ -31,7 +33,7 @@ static bool try_place_ship(Map map, Point at, int size, Direction dir) {
 
 Game *generate_map() {
     Game *g = malloc(sizeof(Game));
-    int ship_sizes[] = {1, 1, 1};
+    int ship_sizes[] = {4, 3, 2, 2, 1, 1};
 
     for (int i = 0; i < sizeof(ship_sizes) / sizeof(*ship_sizes);) {
         Point p = {.x = rand() % Size, .y = rand() % Size};
@@ -57,32 +59,33 @@ void display_map(Game *game) {
                 printf(" ▦ ");
             else if (game->map[i][j] == Dead)
                 printf(" ▢ ");
-            else 
+            else
                 printf("   ");
         }
         printf("\n");
     }
 }
 
-CellState check_at(Game *game, Point at) {
-    return game->map[at.x][at.y];
-}
+CellState check_at(Game *game, Point at) { return game->map[at.x][at.y]; }
 
+/// Returns state of cell if coord x & y available on the map, empty cell state
+/// otherwise.
 static CellState checked_at(Game *game, int x, int y) {
     if (0 <= x && x < Size && 0 <= y && y <= Size)
         return game->map[x][y];
     return Empty;
 }
 
-static bool ships_remained(Game *game) { 
+/// Returns true if any cell on the map is populated, false otherwise
+static bool ships_remained(Game *game) {
     for (int i = 0; i < Size; i++)
         for (int j = 0; j < Size; j++)
             if (game->map[i][j] == Alive)
                 return true;
     return false;
- }
+}
 
-Result try_kill(Game *game, Point at) { 
+Result try_kill(Game *game, Point at) {
     if (game->map[at.x][at.y] == Empty || game->map[at.x][at.y] == Dead)
         return Miss;
 

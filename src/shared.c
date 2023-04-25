@@ -1,8 +1,8 @@
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <signal.h>
 
 #include "shared.h"
 #include "utils.h"
@@ -29,6 +29,7 @@ void parse_command_args(int argc, char **argv, char **ip,
     }
 }
 
+/// Sends all bytes from [buf] to the socket
 static int sendall(sock_handle socket, char *buf, int len, int flags) {
     int total = 0;
     int n;
@@ -44,6 +45,7 @@ static int sendall(sock_handle socket, char *buf, int len, int flags) {
     return (n == -1 ? -1 : total);
 }
 
+/// Reads all bytes to [buf] from the socket
 static int recvall(sock_handle socket, char *buf, int len, int flags) {
     int total = 0;
     int n;
@@ -115,8 +117,8 @@ int process_command(Command cmd, Game *game, sock_handle socket) {
     return 0;
 }
 
-int game_loop(Game *game, sock_handle socket) { 
-    while(true) {
+int game_loop(Game *game, sock_handle socket) {
+    while (true) {
         Command cmd = ask_user();
         TRY(process_command(cmd, game, socket));
 
