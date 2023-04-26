@@ -1,0 +1,11 @@
+version: '3.2'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_PASSWORD=rk6stud
+      - MYSQL_USER=rk6stud
+      - MYSQL_DATABASE=femdb
+      - MYSQL_ROOT_PASSWORD=root
