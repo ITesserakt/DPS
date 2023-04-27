@@ -17,9 +17,6 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "james-yu.latex-workshop",
-                "eamodio.gitlens",
-                "ms-vscode.cpptools-extension-pack",
                 "ms-azuretools.vscode-docker",
                 "donjayamanne.python-extension-pack"
             ],

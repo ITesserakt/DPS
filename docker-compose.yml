@@ -9,3 +9,10 @@ services:
       - MYSQL_USER=rk6stud
       - MYSQL_DATABASE=femdb
       - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+  app:
+    build: project/
+    image: app
+    depends_on:
+      - db
