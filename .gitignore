@@ -54,3 +54,6 @@ dkms.conf
 *build/
 **/indent.log
 .venv
+.idea
+obj/
+**/bin/
