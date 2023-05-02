@@ -1,26 +1,32 @@
-version: "3.2"
+version: '3'
 
 services:
-  vscode:
-    build: .
-    image: latexdevcontainer
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+
     volumes:
-      - ../:/workspace
-      # Docker socket to access Docker server
-      - /var/run/docker.sock:/var/run/docker.sock
-      # SSH directory
-      - ~/.ssh:/root/.ssh
-      - /dev/net/tun:/dev/net/tun
-      - /lib/modules:/lib/modules
-      # For Windows without WSL, a copy will be made
-      # from /tmp/.ssh to ~/.ssh to fix permissions
-      # - ~/.ssh:/tmp/.ssh:ro
-      # Shell history persistence
-      - ~/.zsh_history:/root/.zsh_history:z
-    cap_add:
-      - net_admin
-      - sys_module
+      - ../..:/workspaces:cached
+  
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    network_mode: service:db
+
+    # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    # user: root
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: unless-stopped
     environment:
-      - TZ=
-    entrypoint: ["zsh", "-c", "while sleep 1000; do :; done"]
- 
+      SA_PASSWORD: P@ssw0rd
+      ACCEPT_EULA: Y
+
+    # Add "forwardPorts": ["1433"] to **devcontainer.json** to forward MSSQL locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
