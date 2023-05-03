@@ -8,8 +8,13 @@ services:
 
     volumes:
       - ../..:/workspaces:cached
+      - /dev/net/tun:/dev/net/tun
+      - /lib/modules:/lib/modules
 
-    # Overrides default command so things don't shut down after the process ends.
+    cap_add:
+      - net_admin
+      - sys_module
+
     command: sleep infinity
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.

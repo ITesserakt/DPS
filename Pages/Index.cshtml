@@ -4,7 +4,17 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" width=1000 height=1000>
+        @foreach (var point in Model.Points)
+        {
+            <circle cx="@point.X" cy="@point.Y" r="@Model.PointSize" fill="gray" />
+        }
+        @foreach (var triangle in Model.Triangles)
+        {
+            <line x1="@triangle.a.X" y1="@triangle.a.Y" x2="@triangle.b.X" y2="@triangle.b.Y" stroke="black" />
+            <line x1="@triangle.b.X" y1="@triangle.b.Y" x2="@triangle.c.X" y2="@triangle.c.Y" stroke="black" />
+            <line x1="@triangle.a.X" y1="@triangle.a.Y" x2="@triangle.c.X" y2="@triangle.c.Y" stroke="black" />
+        }
+    </svg>
 </div>
