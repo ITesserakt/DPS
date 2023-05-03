@@ -12,6 +12,4 @@ app.UseRouting();
 app.UseStaticFiles();
 app.MapRazorPages();
 
-app.Services.GetRequiredService<DatabaseRegistry>();
-
 app.Run();

@@ -1,4 +1,5 @@
 ﻿using DPS.Database;
+using DSP.Database;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DPS.Pages;
@@ -11,17 +12,20 @@ public class IndexModel : PageModel {
     public double PointSize => 5;
 
     private readonly ILogger<IndexModel> _logger;
+    private readonly DatabaseRegistry _databases;
 
     public IEnumerable<Triangle> Triangles { get; private set; }
     public IEnumerable<Point> Points => Triangles.SelectMany(x => new[] { x.a, x.b, x.c }).Distinct();
 
-    public IndexModel(ILogger<IndexModel> logger) {
+    public IndexModel(ILogger<IndexModel> logger, DatabaseRegistry databases) {
         _logger = logger;
+        _databases = databases;
         Triangles = Array.Empty<Triangle>();
     }
 
     public void OnGet() {
-        using var db = new Connection();
+        using var db = _databases.CurrentConnection;
+        _logger.LogInformation("Opened a fresh connection to db. Trying to fetch data from it...");
 
         var query = from element in db.Femdb.Elements
                     join n1 in db.Femdb.Nodes on element.n1 equals n1.id
@@ -38,5 +42,7 @@ public class IndexModel : PageModel {
             new Point((x.b.X - minX) * Scale + PointSize, (x.b.Y - minY) * Scale + PointSize),
             new Point((x.c.X - minX) * Scale + PointSize, (x.c.Y - minY) * Scale + PointSize)
         ));
+
+        _logger.LogInformation("Collected all triangles");
     }
 }

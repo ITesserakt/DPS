@@ -6,9 +6,11 @@ public class ConfigureServices {
     private readonly IConfigurationRoot _configuration;
 
     DatabaseRegistry LoadDatabasesFromConfig(IServiceProvider services) {
+        var logger = services.GetRequiredService<ILogger<ConfigureServices>>();
         var connections = _configuration.GetSection("Connections")
             .GetChildren()
             .ToArray();
+        logger.LogInformation("Found {ConSize} database sources to connect to", connections.Length);
 
         var registry = new DatabaseRegistry(services.GetRequiredService<ILogger<DatabaseRegistry>>());
         foreach (var connection in connections) {
@@ -16,9 +18,10 @@ public class ConfigureServices {
             var properties = new DbConnectionStringBuilder();
             foreach (var property in connection.GetRequiredSection("Connection").GetChildren())
                 properties[property.Key] = property.Value;
-            registry.ConfigureDatabase(properties, provider);
+            var source = new DatabaseRegistry.DatabaseSource(properties, provider);
+            registry.ConfigureDatabase(source);
             if (connection.GetValue<bool>("Active") == true)
-                registry.ActivateSource(properties, provider);
+                registry.ActivateSource(source);
         }
         return registry;
     }
@@ -30,6 +33,7 @@ public class ConfigureServices {
 
     public void Build() {
         _services.AddSingleton<DatabaseRegistry>(LoadDatabasesFromConfig)
+                 .AddLogging()
                  .AddRazorPages();
     }
 }

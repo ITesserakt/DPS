@@ -9,10 +9,6 @@ public partial class Connection : DataConnection {
         Femdb = new DataContext(this);
     }
 
-    public Connection() {
-        InitSchemas();
-    }
-
     public Connection(string provider, string config) : base(provider, config) {
         InitSchemas();
     }
