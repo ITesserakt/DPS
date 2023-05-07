@@ -28,6 +28,12 @@ tasks.test {
 }
 
 task<JavaExec>("buildCorba") {
+    outputs.dir("build/generated/jacobIDL")
+
     mainClass.set("org.jacorb.idl.parser")
     classpath = configurations.getByName("corba")
+    args = arrayListOf(
+        "-d", "build/generated/jacorbIDL",
+        "-all", "-forceOverwrite"
+    )
 }
