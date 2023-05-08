@@ -1,18 +1,26 @@
 module Cell {
-  /* Интерфейс обратного вызова трубки */
-  interface TubeCallback {
-    /* Принять сообщение message от номера fromNum */
-    long receiveSMS (in string fromNum, in string message);
-    /* Вернуть свой номер */
-    string getNum();
-  };
+    exception WrongReceiver { };
+    exception WrongPhone { };
 
-  /* Интерфейс базовой станции */
-  interface Station {
-    /* Зарегистрировать трубку с номером phoneNum, */
-    /* для обратного вызова трубки использовать ссылку TubeCallback */
-    long register (in TubeCallback objRef, in string phoneNum);
-    /* Отправить сообщение message от номера fromNum к номеру toNum */
-    long sendSMS (in string fromNum, in string toNum, in string message);
-  };
+    /* Интерфейс обратного вызова трубки */
+    interface TubeCallback {
+        /* Принять сообщение message от номера fromNum */
+        void receiveSMS (in string fromNum, in string message);
+        /* Вернуть свой номер */
+        string getNum();
+
+        string receiveACK(in string code);
+    };
+
+    /* Интерфейс базовой станции */
+    interface Station {
+        /* Зарегистрировать трубку с номером phoneNum, */
+        /* для обратного вызова трубки использовать ссылку TubeCallback */
+        void register (in TubeCallback objRef, in string phoneNum) raises (WrongPhone);
+        /* Отправить сообщение message от номера fromNum к номеру toNum */
+        void sendSMS (in string fromNum, in string toNum, in string message) raises (WrongReceiver);
+
+        // sends acknowledgment signal to all tubes
+        void sendACK();
+    };
 };

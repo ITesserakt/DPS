@@ -59,6 +59,17 @@ public class Connection implements AutoCloseable {
 
     public void listenForClients() throws WrongPolicy, ServantNotActive, NotFound {
         getStationRef();
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                _stationRef.sendACK();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }).start();
+
         _connection.run();
     }
 

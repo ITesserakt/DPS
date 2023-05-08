@@ -1,9 +1,6 @@
 package org.tesserakt;
 
-import Cell.Station;
-import Cell.StationHelper;
-import Cell.TubeCallback;
-import Cell.TubeCallbackHelper;
+import Cell.*;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NameComponent;
@@ -62,16 +59,19 @@ public class Connection implements AutoCloseable {
             NameComponent[] nameComponent = new NameComponent[]{new NameComponent(stationName, "")};
             _stationRef = StationHelper.narrow(nameService.resolve(nameComponent));
 
-            if (_stationRef.register(ref, ref.getNum()) == 0)
+            try {
+                _stationRef.register(ref, ref.getNum());
                 _connection.run();
-            else throw new IllegalStateException("Phone didn't registered in station");
+            } catch (WrongPhone e) {
+                throw new IllegalStateException("Phone didn't registered in station");
+            }
         } catch (InvalidName | org.omg.CosNaming.NamingContextPackage.InvalidName | CannotProceed e) {
             _logger.error("Wrong name to station used", e);
         }
     }
 
-    public int sendSMS(String to, String message) {
-        return _stationRef.sendSMS(_impl.getNum(), to, message);
+    public void sendSMS(String to, String message) throws WrongReceiver {
+        _stationRef.sendSMS(_impl.getNum(), to, message);
     }
 
     @Override

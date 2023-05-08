@@ -27,7 +27,7 @@ public class InteractiveConsole extends Console {
                 if (msgString == null) break;
                 Message message = Message.parse(msgString);
                 if (message != null) messageHandler.accept(message);
-                else System.out.println("Wrong format: <phone> -> <message>");
+                else System.out.println("Wrong format: <phone> <- <message>");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

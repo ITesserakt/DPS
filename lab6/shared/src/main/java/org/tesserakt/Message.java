@@ -21,7 +21,7 @@ public class Message {
     }
 
     public static @Nullable Message parse(@NotNull String toParse) {
-        String[] compound = toParse.split("->", 2);
+        String[] compound = toParse.split("<-", 2);
         if (compound.length == 1)
             return null;
 
