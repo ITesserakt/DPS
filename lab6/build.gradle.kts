@@ -1,39 +1,55 @@
-fun DependencyHandlerScope.corba(dependencyNotation: String) =
-    add("corba", dependencyNotation)
-
 plugins {
     id("java")
+    id("application")
 }
 
-group = "org.tesserakt"
-version = "1.0-SNAPSHOT"
+allprojects {
+    group = "org.tesserakt"
+    version = "1.0-SNAPSHOT"
 
-configurations {
-    create("corba")
+    apply(plugin = "java")
+    apply(plugin = "application")
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation("org.jacorb:jacorb-omgapi:3.9")
+        implementation("org.jacorb:jacorb:3.9")
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+    }
 }
 
-repositories {
-    mavenCentral()
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
-dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    corba("org.jacorb:jacorb-idl-compiler:3.6.1")
-    corba("org.jacorb:jacorb-omgapi:3.6.1")
+project(":server") {
+    dependencies {
+        implementation(project(":shared"))
+        implementation("org.slf4j:slf4j-simple:2.0.5")
+    }
+
+    application {
+        mainClass.set("${group}.Main")
+    }
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+project(":client") {
+    dependencies {
+        implementation(project(":shared"))
+        implementation("info.picocli:picocli:4.7.3")
+        implementation("org.slf4j:slf4j-simple:2.0.5")
+        runtimeOnly("org.jboss.spec.javax.rmi:jboss-rmi-api_1.0_spec:1.0.6.Final")
+    }
 
-task<JavaExec>("buildCorba") {
-    outputs.dir("build/generated/jacobIDL")
-
-    mainClass.set("org.jacorb.idl.parser")
-    classpath = configurations.getByName("corba")
-    args = arrayListOf(
-        "-d", "build/generated/jacorbIDL",
-        "-all", "-forceOverwrite"
-    )
+    application {
+        mainClass.set("${group}.Main")
+    }
 }
