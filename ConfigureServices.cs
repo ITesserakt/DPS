@@ -1,4 +1,5 @@
 using System.Data.Common;
+using DPS;
 using DSP.Database;
 
 public class ConfigureServices {
@@ -34,6 +35,7 @@ public class ConfigureServices {
     public void Build() {
         _services.AddSingleton<DatabaseRegistry>(LoadDatabasesFromConfig)
                  .AddLogging()
+                 .AddSingleton<ColorRepository>()
                  .AddRazorPages();
     }
 }

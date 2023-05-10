@@ -1,5 +1,5 @@
-﻿using DPS.Database;
-using DSP.Database;
+﻿using DSP.Database;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DPS.Pages;
@@ -10,17 +10,26 @@ public class IndexModel : PageModel {
 
     public double Scale => 5;
     public double PointSize => 5;
+    public IList<string> Colors = new[] {
+        "red",
+        "black",
+        "gray"
+    };
 
     private readonly ILogger<IndexModel> _logger;
     private readonly DatabaseRegistry _databases;
+    private readonly ColorRepository _colors;
 
     public IEnumerable<Triangle> Triangles { get; private set; }
     public IEnumerable<Point> Points => Triangles.SelectMany(x => new[] { x.a, x.b, x.c }).Distinct();
+    public string Color { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger, DatabaseRegistry databases) {
+    public IndexModel(ILogger<IndexModel> logger, DatabaseRegistry databases, ColorRepository colors) {
         _logger = logger;
         _databases = databases;
+        _colors = colors;
         Triangles = Array.Empty<Triangle>();
+        Color = _colors.Color;
     }
 
     public void OnGet() {
@@ -43,6 +52,12 @@ public class IndexModel : PageModel {
             new Point((x.c.X - minX) * Scale + PointSize, (x.c.Y - minY) * Scale + PointSize)
         ));
 
-        _logger.LogInformation("Collected all triangles");
+        _logger.LogInformation("Collected all triangles with color {Color}", Color);
+    }
+
+    public RedirectResult OnPost() {
+        _colors.Color = Request.Form["desiredColor"]!;
+        _logger.LogInformation("Setting color {Color}", Request.Form["desiredColor"]!);
+        return Redirect("/");
     }
 }
