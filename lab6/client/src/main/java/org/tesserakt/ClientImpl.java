@@ -1,9 +1,12 @@
 package org.tesserakt;
 
 import Cell.TubeCallbackPOA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientImpl extends TubeCallbackPOA {
     private final String _phoneNumber;
+    private final Logger _logger = LoggerFactory.getLogger(ClientImpl.class);
 
     public ClientImpl(String phoneNumber) {
         _phoneNumber = phoneNumber;
@@ -11,7 +14,7 @@ public class ClientImpl extends TubeCallbackPOA {
 
     @Override
     public void receiveSMS(String fromNum, String message) {
-        System.out.printf("%s -> %s\n", fromNum, message);
+        _logger.info("{} -> {}", fromNum, message);
     }
 
     @Override

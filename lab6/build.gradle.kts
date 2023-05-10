@@ -26,7 +26,7 @@ allprojects {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(8))
     }
 }
 
@@ -51,5 +51,6 @@ project(":client") {
 
     application {
         mainClass.set("${group}.Main")
+        logging.captureStandardOutput(LogLevel.DEBUG)
     }
 }

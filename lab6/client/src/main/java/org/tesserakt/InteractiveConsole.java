@@ -25,9 +25,17 @@ public class InteractiveConsole extends Console {
             try {
                 String msgString = in.readLine();
                 if (msgString == null) break;
-                Message message = Message.parse(msgString);
-                if (message != null) messageHandler.accept(message);
-                else System.out.println("Wrong format: <phone> <- <message>");
+                String[] compound = msgString.split("<-", 2);
+                if (compound.length == 1) {
+                    System.out.println("Wrong format: <phone> <- <message> [\\ <message continuation>]");
+                } else {
+                    String text = compound[1];
+                    while (text.endsWith("\\")) {
+                        text = text.replaceAll("\\\\", "\n");
+                        text += in.readLine();
+                    }
+                    messageHandler.accept(new Message(compound[0].trim(), text.trim()));
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

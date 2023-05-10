@@ -26,9 +26,6 @@ public class ServerImpl extends StationPOA {
 
     @Override
     public void register(TubeCallback objRef, String phoneNum) throws WrongPhone {
-        if (!phoneNum.matches("\\+?\\d-?\\d{3}-?\\d{3}-?\\d{2}-?\\d{2}"))
-            throw new WrongPhone();
-
         _logger.info("New phone registered: {}", phoneNum);
         _registeredPhones.put(phoneNum, objRef);
     }

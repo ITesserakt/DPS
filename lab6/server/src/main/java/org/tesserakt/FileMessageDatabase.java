@@ -10,14 +10,14 @@ public class FileMessageDatabase implements MessageDatabase, AutoCloseable {
     private final OutputStreamWriter _output;
 
     public FileMessageDatabase(String filename) throws IOException {
-        _output = new OutputStreamWriter(Files.newOutputStream(Paths.get(filename), StandardOpenOption.CREATE));
+        _output = new OutputStreamWriter(Files.newOutputStream(Paths.get(filename), StandardOpenOption.APPEND, StandardOpenOption.CREATE));
     }
 
     @Override
     public void saveMessage(AuthoredMessage message) {
         try {
             Instant currentTime = Instant.now();
-            String formatted = String.format("[%s] - <%s> => <%s>: %s",
+            String formatted = String.format("[%s] - <%s> => <%s>: %s\n",
                     currentTime.toString(),
                     message.getSenderPhone(),
                     message.getReceiverPhone(),
