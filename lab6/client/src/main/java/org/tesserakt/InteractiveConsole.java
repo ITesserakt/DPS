@@ -14,12 +14,24 @@ public class InteractiveConsole extends Console {
     @Parameters(description = "Client phone number to use", index = "0", arity = "1")
     private String _phoneNumber;
 
+    private String readMultilineString(String initial, BufferedReader reader) throws IOException {
+        while (initial.endsWith("\\")) {
+            initial = initial.replaceAll("\\\\", "\n");
+            initial += reader.readLine();
+        }
+        ;
+
+        return initial;
+    }
+
+
     public String getPhoneNumber() {
         return _phoneNumber;
     }
 
     public void run(Consumer<Message> messageHandler) {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Message format: <phone>: (<sms> | <mms>) <- <message> [\\ <message continuation>]");
 
         while (true) {
             try {
@@ -27,15 +39,20 @@ public class InteractiveConsole extends Console {
                 if (msgString == null) break;
                 String[] compound = msgString.split("<-", 2);
                 if (compound.length == 1) {
-                    System.out.println("Wrong format: <phone> <- <message> [\\ <message continuation>]");
-                } else {
-                    String text = compound[1];
-                    while (text.endsWith("\\")) {
-                        text = text.replaceAll("\\\\", "\n");
-                        text += in.readLine();
-                    }
-                    messageHandler.accept(new Message(compound[0].trim(), text.trim()));
+                    System.out.println("Wrong format: <phone>: (<sms> | <mms>) <- <message> [\\ <message continuation>]");
+                    continue;
                 }
+
+                String[] systemCompound = compound[0].split(":");
+                String phone = systemCompound[0].trim();
+                String text = readMultilineString(compound[1], in);
+
+                if (systemCompound.length > 1 && systemCompound[1].trim().equals("sms"))
+                    messageHandler.accept(new Message(phone, text.trim()));
+                else if (systemCompound.length > 1 && systemCompound[1].trim().equals("mms"))
+                    messageHandler.accept(FileMessage.fromFilepath(phone, text.trim()));
+                else
+                    System.out.println("Wrong format: <phone>: (<sms> | <mms>) <- <message> [\\ <message continuation>]");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

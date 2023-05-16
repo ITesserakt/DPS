@@ -1,8 +1,8 @@
 package org.tesserakt;
 
 public class Message {
-    private final String _receiverPhone;
-    private final String _message;
+    protected final String _receiverPhone;
+    protected final String _message;
 
     public String getReceiverPhone() {
         return _receiverPhone;

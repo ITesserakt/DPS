@@ -12,6 +12,7 @@ dependencies {
 
     implementation("info.picocli:picocli:4.7.3")
     implementation("org.jetbrains:annotations:24.0.0")
+    implementation("commons-io:commons-io:2.11.0")
 }
 
 task<JavaExec>("buildCorba") {
