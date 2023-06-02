@@ -21,7 +21,7 @@ heatmap_t *intoHeatmap(Matrix m) {
 
     for (int i = 0; i < m.width; i++)
         for (int j = 0; j < m.height; j++)
-            heatmap_add_weighted_point(frame, i, j, fabs(*get(m, i, j)));
+            heatmap_add_weighted_point(frame, i, j, fmax(*get(m, i, j), 0));
 
     return frame;
 }

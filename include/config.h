@@ -4,8 +4,8 @@
 
 typedef struct {
     bool generateImage;
-    double height;
-    double width;
+    int height;
+    int width;
     double time_layers;
     double external_weight;
     double a;

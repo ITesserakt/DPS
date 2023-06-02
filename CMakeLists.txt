@@ -14,7 +14,9 @@ add_executable(main src/main.c src/config.c src/matrix.c)
 target_include_directories(main PRIVATE include)
 
 find_package(MPI REQUIRED)
+
 target_include_directories(main PRIVATE ${MPI_INCLUDE_PATH})
+
 target_link_libraries(main PRIVATE ${MPI_C_LIBRARIES})
 target_link_libraries(main PRIVATE heatmap)
 target_link_libraries(main PRIVATE m)
