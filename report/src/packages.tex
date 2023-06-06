@@ -1,0 +1,43 @@
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{vmargin}     % настройка отступов
+\setpapersize{A4}
+% лево, верх, право, низ, верхний кол, нижний кол, номер страницы
+\setmarginsrb{3cm}{2cm}{1.5cm}{2cm}{0pt}{0mm}{0pt}{13mm}
+
+\usepackage{indentfirst} % отступ красной строки после \section
+\usepackage{float}       % [H]
+\usepackage{graphicx}    % \includegraphics[]{}
+
+\usepackage{hyperref}    % \href
+
+\usepackage{appendix}
+
+\usepackage{listings}
+
+\sloppy % стараемся не залезать за поля
+% замена рис. на Рисунок
+\addto\captionsrussian{\renewcommand{\figurename}{Рисунок}}
+\usepackage[labelsep=endash]{caption} % разделитель между рис. теперь тире
+
+\usepackage{color}
+
+\definecolor{mygray}{rgb}{0.4,0.4,0.4}
+\definecolor{mygreen}{rgb}{0,0.8,0.6}
+\definecolor{myorange}{rgb}{1.0,0.4,0}
+
+\lstset{
+    basicstyle=\footnotesize\sffamily\color{black},
+    commentstyle=\color{mygray},
+    frame=none,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{mygray},
+    keywordstyle=\color{mygreen},
+    showspaces=false,
+    showstringspaces=false,
+    stringstyle=\color{myorange},
+    tabsize=2
+}
