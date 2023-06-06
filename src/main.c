@@ -12,6 +12,7 @@
 
 #include <gif.h>
 #include <heatmap.h>
+#include <lodepng.h>
 
 #include "config.h"
 #include "matrix.h"
@@ -31,8 +32,7 @@ typedef struct {
 
 double external(double x, double y, double t) {
     if (x == config.width / 2 && y == config.height / 2) {
-        if (2 < t && t < 50)
-            return config.external_weight * exp(sin(t));
+        return config.external_weight * sin(x * y + t);
     }
     return 0;
 }
@@ -74,7 +74,7 @@ void explicit_solver(Stripes stripes, double t, Matrix current, Matrix prev,
     double Ap = *get(prev, x, y);
     double An = *get(next, x, y);
 
-    *get(current, x, y) = (-dt * dt * dzxy + Ap + An) / 2;
+    *get(next, x, y) = (-dt * dt * dzxy + Ap + A) / 2;
 }
 
 int main(int argc, char *argv[]) {
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
             int y = i / width;
 
             if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
-                *get(current, x, y) = 0;
+                *get(next, x, y) = 1;
             else {
                 Stripes s = {.x = x,
                              .y = y,
@@ -163,12 +163,15 @@ int main(int argc, char *argv[]) {
     if (config.generateImage && currentRank == 0) {
         GifWriter w;
         GifBegin(&w, "output.gif", width, height, 10, 8, false);
-        for (int i = 0; i < time_steps; i++) {
+        for (int i = 0; i < time_steps - 1; i++) {
             unsigned char *data = heatmap_render_default_to(frames[i], NULL);
             GifWriteFrame(&w, data, width, height, 10, 8, false);
             heatmap_free(frames[i]);
         }
         GifEnd(&w);
+
+        unsigned char *data = heatmap_render_default_to(frames[time_steps - 1], NULL);
+        lodepng_encode32_file("output.png", data, width, height);
     }
 
     freeMatrix(previous);
