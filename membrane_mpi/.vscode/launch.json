@@ -1,0 +1,65 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'membrane_mpi'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=membrane_mpi",
+                    "--package=membrane_mpi"
+                ],
+                "filter": {
+                    "name": "membrane_mpi",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'membrane_mpi'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=membrane_mpi",
+                    "--package=membrane_mpi"
+                ],
+                "filter": {
+                    "name": "membrane_mpi",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Cargo launch",
+            "cargo": {
+                "args": [
+                    "mpirun",
+                    "-n",
+                    "2",
+                    "--bin",
+                    "membrane_mpi"
+                ],
+                "filter": {
+                    "name": "membrane_mpi",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
